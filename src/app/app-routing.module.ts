@@ -5,6 +5,7 @@ import { FilesComponent } from './home/files/files.component';
 import { HomeComponent } from './home/home.component';
 import { InfoComponent } from './home/info/info.component';
 import { TerminalComponent } from './home/terminal/terminal.component';
+import { LunaMonitorComponent } from './home/monitor/monitor.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
       { path: 'files', component: FilesComponent },
       { path: 'terminal', component: TerminalComponent },
       { path: 'info', component: InfoComponent },
+      { path: 'monitor', component: LunaMonitorComponent },
       { path: '', redirectTo: 'apps', pathMatch: 'full' },
     ]
   },

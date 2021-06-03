@@ -24,6 +24,7 @@ import { ConnHintComponent } from './add-device/conn-hint/conn-hint.component';
 import { CrashesComponent } from './home/info/crashes/crashes.component';
 import { InstalledComponent } from './home/apps/installed/installed.component';
 import { ChannelComponent } from './home/apps/channel/channel.component';
+import { LunaMonitorComponent, MonitorFilterPipe, MonitorMapCallsPipe } from './home/monitor/monitor.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -45,6 +46,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
     CrashesComponent,
     InstalledComponent,
     ChannelComponent,
+    LunaMonitorComponent,
+    MonitorFilterPipe,
+    MonitorMapCallsPipe,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,103 @@
+<div class="btn-toolbar m-2" role="toolbar" aria-label="Toolbar with button groups">
+  <div class="btn-group btn-group-toggle mr-2">
+    <label class="btn-success" ngbButtonLabel *ngIf="!monitorSession">
+      <input type="checkbox" ngbButton (click)="startMonitor()">Start
+    </label>
+    <label class="btn-secondary" ngbButtonLabel *ngIf="monitorSession && !monitorReady">
+      <input type="checkbox" ngbButton disabled>Start
+    </label>
+    <label class="btn-danger" ngbButtonLabel *ngIf="monitorSession && monitorReady">
+      <input type="checkbox" ngbButton (click)="stopMonitor()">Stop
+    </label>
+    <label class="btn-secondary" ngbButtonLabel>
+      <input type="checkbox" ngbButton (click)="clearMessages()">Clear
+    </label>
+  </div>
+  <div class="btn-group btn-group-toggle mr-2">
+    <label class="btn-secondary" ngbButtonLabel>
+      <input type="checkbox" ngbButton [(ngModel)]="filter.tx">TX
+    </label>
+    <label class="btn-secondary" ngbButtonLabel>
+      <input type="checkbox" ngbButton [(ngModel)]="filter.rx">RX
+    </label>
+  </div>
+  <div class="btn-group btn-group-toggle mr-2">
+    <label class="btn-secondary" ngbButtonLabel>
+      <input type="checkbox" ngbButton [(ngModel)]="filter.call">Call
+    </label>
+    <label class="btn-secondary" ngbButtonLabel>
+      <input type="checkbox" ngbButton [(ngModel)]="filter.return">Return
+    </label>
+  </div>
+  <div class="input-group mr-2">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="client-filter">Client</span>
+    </div>
+    <input type="text" class="form-control" aria-describedby="client-filter" [(ngModel)]="filter.client">
+  </div>
+  <div class="input-group mr-2">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="service-filter">Service</span>
+    </div>
+    <input type="text" class="form-control" aria-describedby="service-filter" [(ngModel)]="filter.service">
+  </div>
+</div>
+<table class="table table-sm table-hover">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Client</th>
+    <th scope="col">Service</th>
+    <th scope="col">Method</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let message of messagesUnfiltered | monitorMapCalls | monitorFilter: filter">
+    <th (click)="copyCommand(message)">
+      {{ message.timestamp }}&nbsp;
+      {{ message.token }}
+    </th>
+    <td>
+      {{ message.client }} ({{message.clientSock}})
+    </td>
+    <td>
+      {{ message.service }} ({{message.serviceSock}})
+    </td>
+    <td><b><code>{{ message.method }}</code></b>&nbsp;
+      <u><code>{{ message.body | json }}</code></u>
+      <div *ngFor="let response of message.responses">
+        <i *ngIf="response.method === '/com/palm/luna/private/cancel'">Cancelled&nbsp;</i>
+        <code>{{response.body | json}}</code>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<table class="table table-sm table-hover">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Client</th>
+    <th scope="col">Service</th>
+    <th scope="col">Message</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let message of messagesUnfiltered | monitorFilter: filter">
+    <th (click)="copyCommand(message)">
+      <span *ngIf="message.direction == enumDirection.RX" title="RX">«</span><span *ngIf="message.direction == enumDirection.TX" title="TX">»</span>&nbsp;
+      {{ message.timestamp }}&nbsp;
+      <i class="bi bi-telephone-fill" *ngIf="message.type == enumMessageType.Call" title="Call"></i>
+      <i class="bi bi-arrow-return-right" *ngIf="message.type == enumMessageType.Return" title="Return"></i>
+      {{ message.token }}
+    </th>
+    <td>
+      {{ message.client }} ({{message.clientSock}})
+    </td>
+    <td>
+      {{ message.service }} ({{message.serviceSock}})
+    </td>
+    <td><b><code>{{ message.method }}</code></b>&nbsp;<code>{{ message.body | json }}</code></td>
+  </tr>
+  </tbody>
+</table>

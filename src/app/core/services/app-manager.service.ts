@@ -133,8 +133,10 @@ export class AppManagerService {
   }
 
   private async tempDownloadIpk(device: Device, location: string): Promise<string> {
-    const url = new URL(location);
     const path = `/tmp/devman_dl_${Date.now()}.ipk`
+    const url = location.startsWith('http')
+      ? new URL(location)
+      : new URL(`file://${location}`);
     switch (url.protocol) {
       case 'file:':
         await this.file.put(device, path, location);
@@ -198,12 +200,22 @@ export class AppManagerService {
     return new Promise<void>((resolve, reject) => {
       const subscription = observable.subscribe({
         next: (v) => {
-          if (v['finished'] === true || v.subscribed === false ||
-            v['serviceName'] === 'org.webosbrew.hbchannel.service' && v['errorCode'] === -1) {
+          if (
+            v['finished'] === true ||
+            v.subscribed === false ||
+            (v['serviceName'] === 'org.webosbrew.hbchannel.service' &&
+              v['errorCode'] === -1)
+          ) {
             resolve();
             subscription.unsubscribe();
           }
-        }, error: (v) => {
+
+          if (v['returnValue'] === false) {
+            reject(new Error(v['errorText']));
+            subscription.unsubscribe();
+          }
+        },
+        error: (v) => {
           console.warn('subscribe error', v);
           reject(v);
         },
